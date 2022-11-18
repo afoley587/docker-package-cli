@@ -33,9 +33,9 @@ of those, do not worry. We will talk through all the pieces you need to be succe
 
 There are a lot of great python argument parsing utilities our there:
 
-* [argparse]()
-* [click]()
-* [docopt]()
+* [argparse](https://docs.python.org/3/library/argparse.html)
+* [click](https://click.palletsprojects.com/en/8.1.x/)
+* [docopt](http://docopt.org/)
 
 And I chose `docopt` for today because its easy to use and takes a lot of the
 heavy lifting off of the programmer. `docopt` is going to parse our docstring
