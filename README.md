@@ -24,6 +24,8 @@ send HTTP requests, similarly to cURL. However, this could definitely be expande
 * Connect to GCP to do some processing
 * etc.
 
+As always, any and all code referenced will be publically available on github: https://github.com/afoley587/docker-package-cli
+
 ## The CLI
 So, let's start with the CLI. We are going to be using python as our language
 and poetry as our virtual environment. If you are unfamiliar with either 
@@ -260,4 +262,61 @@ So we now have two things:
 * Our cool CLI
 * A way to package it up
 
-So let's build, run, and play with our CLI
+So let's build, run, and play with our CLI!
+
+We can build our image by running:
+
+```shell
+prompt> docker build . -t pycurl-docker
+[+] Building 0.1s (12/12) FINISHED                                                                                                                                    
+ => [internal] load build definition from Dockerfile                                                                                                             0.0s
+ => => transferring dockerfile: 37B                                                                                                                              0.0s
+ => [internal] load .dockerignore                                                                                                                                0.0s
+ => => transferring context: 2B                                                                                                                                  0.0s
+ => [internal] load metadata for docker.io/library/python:3.9-slim                                                                                               0.0s
+ => [1/7] FROM docker.io/library/python:3.9-slim                                                                                                                 0.0s
+ => [internal] load build context                                                                                                                                0.0s
+ => => transferring context: 96B                                                                                                                                 0.0s
+ => CACHED [2/7] RUN groupadd -g 10001 --system pycurl &&     useradd -ms /bin/bash -u 10000 --system -g pycurl -d /home/pycurl pycurl                           0.0s
+ => CACHED [3/7] RUN pip install poetry==1.2.2                                                                                                                   0.0s
+ => CACHED [4/7] WORKDIR /home/pycurl/                                                                                                                           0.0s
+ => CACHED [5/7] COPY --chown=pycurl:pycurl pyproject.toml poetry.lock /home/pycurl/                                                                             0.0s
+ => CACHED [6/7] RUN poetry export -f requirements.txt -o requirements.txt --without-hashes &&     pip install -r requirements.txt                               0.0s
+ => CACHED [7/7] COPY --chown=pycurl:pycurl pycurl.py /home/pycurl/                                                                                              0.0s
+ => exporting to image                                                                                                                                           0.0s
+ => => exporting layers                                                                                                                                          0.0s
+ => => writing image sha256:4bb3471f91255070206d934f6830b5e5d65926c41e75736ec9a023d42d043386                                                                     0.0s
+ => => naming to docker.io/library/pycurl-docker                                                                                                                 0.0s
+
+Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them
+```
+
+And we can now run it with:
+```shell
+prompt> docker run pycurl-docker put https://httpbin.org/put --headers='Content-Type=application/json' --data='{"id":"that"}' --verbose
+DEBUG:root:Sending request to https://httpbin.org/put with {'Content-Type': 'application/json'} and {'id': 'that'}
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): httpbin.org:443
+DEBUG:urllib3.connectionpool:https://httpbin.org:443 "PUT /put HTTP/1.1" 200 475
+INFO:root:{
+  "args": {}, 
+  "data": "{\"id\": \"that\"}", 
+  "files": {}, 
+  "form": {}, 
+  "headers": {
+    "Accept": "*/*", 
+    "Accept-Encoding": "gzip, deflate", 
+    "Content-Length": "14", 
+    "Content-Type": "application/json", 
+    "Host": "httpbin.org", 
+    "User-Agent": "python-requests/2.28.1", 
+    "X-Amzn-Trace-Id": "Root=1-6377efb8-20f592843ad2e62361db289b"
+  }, 
+  "json": {
+    "id": "that"
+  }, 
+  "origin": "174.21.91.56", 
+  "url": "https://httpbin.org/put"
+}
+```
+
+Congratulations! You've just built and packaged a neat CLI!
