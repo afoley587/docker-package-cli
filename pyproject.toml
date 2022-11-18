@@ -2,7 +2,7 @@
 name = "pycurl"
 version = "0.1.0"
 description = ""
-authors = ["Alex Foley <afoley@getsporttrade.com>"]
+authors = ["Alex Foley <alexandergfoley@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
