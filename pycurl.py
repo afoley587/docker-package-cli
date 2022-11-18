@@ -81,8 +81,13 @@ def _log_response(r: requests.models.Response) -> int:
   return 1
 
 def main():
+  # Pass our docstring to docopt for parsing
   arguments = docopt(__doc__, version='pycurl 0.1.0')
 
+  # Custom schema validation to ensure that:
+  #   * valid urls are passed
+  #   * data is in json compatible format
+  #   * headers are in key=value format
   try:
     schema = Schema({
       '<url>': Regex(r"^http(s)?:\/\/", error="URL must begin with http:// or https://."),
@@ -101,8 +106,10 @@ def main():
   arguments = schema.validate(arguments)
   log_level = logging.DEBUG if arguments['--verbose'] else logging.INFO
 
+  # set log level based on --verbose flag
   logging.basicConfig(level=log_level)
 
+  # Pull data out of the user passed arguments
   url     = arguments['<url>']
   headers = {header.split('=')[0]: header.split('=')[1] for header in arguments['--headers']}
   body    = json.loads(arguments['--data']) if arguments['--data'] else None
@@ -110,6 +117,7 @@ def main():
 
   logging.debug(f"Sending request to {url} with {headers} and {body}")
 
+  # Send Request
   if (arguments['get']):
     rc = get(url, headers, body)
   elif (arguments['post']):
